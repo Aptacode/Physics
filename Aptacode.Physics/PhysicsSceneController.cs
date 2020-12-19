@@ -11,14 +11,14 @@ namespace Aptacode.Physics
 {
     public class PhysicsSceneController : SceneControllerViewModel
     {
-        public PhysicsSceneController(PhysicsEngine physicsEngine, Vector2 size) : base(new SceneViewModel()
+        public PhysicsSceneController(PhysicsEngine physicsEngine, Vector2 size) : base(new SceneViewModel
         {
             Components = physicsEngine.Components.Select(c => c.Component).ToList(),
             Size = size.ToScale()
         })
         {
             PhysicsEngine = physicsEngine;
-            
+
             UserInteractionController.OnMouseDown += UserInteractionControllerOnOnMouseDown;
             UserInteractionController.OnMouseUp += UserInteractionControllerOnOnMouseUp;
             UserInteractionController.OnMouseMoved += UserInteractionControllerOnOnMouseMoved;
@@ -28,7 +28,7 @@ namespace Aptacode.Physics
 
         public ComponentViewModel SelectedComponent { get; set; }
         public PhysicsEngine PhysicsEngine { get; set; }
-        
+
         private void UserInteractionControllerOnOnMouseMoved(object? sender, Vector2 e)
         {
             if (SelectedComponent == null)
@@ -38,7 +38,7 @@ namespace Aptacode.Physics
 
             var delta = e - UserInteractionController.LastMousePosition;
 
-            Translate(SelectedComponent, delta, new List<ComponentViewModel> { SelectedComponent },
+            Translate(SelectedComponent, delta, new List<ComponentViewModel> {SelectedComponent},
                 new CancellationTokenSource());
         }
 
@@ -64,7 +64,5 @@ namespace Aptacode.Physics
 
             Scene.BringToFront(SelectedComponent);
         }
-        
-        
     }
 }

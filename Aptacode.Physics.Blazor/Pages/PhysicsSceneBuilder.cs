@@ -9,9 +9,9 @@ namespace Aptacode.Physics.Blazor.Pages
     {
         private readonly List<PhysicsComponent> _components = new();
         private readonly ViewModelFactory _viewModelFactory = new();
+        private CollisionDetector _collisionDetector = new HybridCollisionDetector();
         private float _height;
         private float _width;
-        private CollisionDetector _collisionDetector = new HybridCollisionDetector();
 
 
         public PhysicsSceneBuilder SetCollisionDetector(CollisionDetector collisionDetector)
@@ -19,7 +19,7 @@ namespace Aptacode.Physics.Blazor.Pages
             _collisionDetector = collisionDetector;
             return this;
         }
-        
+
         public PhysicsSceneBuilder SetWidth(float width)
         {
             _width = width;
@@ -44,7 +44,7 @@ namespace Aptacode.Physics.Blazor.Pages
             {
                 Components = _components.ToList()
             };
-            
+
             Reset();
             return engine;
         }

@@ -6,35 +6,38 @@ namespace Aptacode.Physics.Blazor.Pages
 {
     public class PhysicsComponentBuilder
     {
-        private Primitive _primitive = new Point(Vector2.Zero);
         private readonly ViewModelFactory _viewModelFactory = new();
-        private Vector2 _velocity = Vector2.Zero;
         private Vector2 _acceleration = Vector2.Zero;
-        private float _mass = 1.0f;
-        private bool _hasPhysics = true;
         private bool _hasCollisions = true;
+        private bool _hasPhysics = true;
+        private float _mass = 1.0f;
+        private Primitive _primitive = new Point(Vector2.Zero);
+        private Vector2 _velocity = Vector2.Zero;
 
         public PhysicsComponentBuilder SetVelocity(Vector2 velocity)
         {
             _velocity = velocity;
             return this;
         }
+
         public PhysicsComponentBuilder SetCollision(bool collision)
         {
             _hasCollisions = collision;
             return this;
         }
-        
+
         public PhysicsComponentBuilder SetAcceleration(Vector2 acceleration)
         {
             _acceleration = acceleration;
             return this;
         }
+
         public PhysicsComponentBuilder SetMass(float mass)
         {
             _mass = mass;
             return this;
         }
+
         public PhysicsComponentBuilder SetPhysics(bool hasPhysics)
         {
             _hasPhysics = hasPhysics;
