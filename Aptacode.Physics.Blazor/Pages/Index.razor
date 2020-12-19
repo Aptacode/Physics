@@ -1,47 +1,4 @@
 ﻿@page "/"
 @inherits IndexBase
 
-<h1>Physics!</h1>
-
-<div>
-    <svg width="1000" height="1000">
-        <defs>
-            <pattern id="tenthGrid" width="4" height="4" patternUnits="userSpaceOnUse">
-                <path d="M 4 0 L 0 0 0 4" fill="none" stroke="silver" stroke-width="1" />
-            </pattern>
-            <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
-                <rect width="16" height="16" fill="url(#tenthGrid)" />
-                <path d="M 16 0 L 0 0 0 16" fill="none" stroke="gray" stroke-width="1" />
-            </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-        
-        @for (int i = Engine.Scene.Components.Count() - 1; i >= 0; i--)
-        {
-            switch (Engine.Scene.Components.ElementAt(i))
-            {
-                case CircleComponent circleComponent:
-                    <circle cx="@(circleComponent.Circle.Position.X)" cy="@(circleComponent.Circle.Position.Y)" r="@(circleComponent.Circle.Radius)" stroke="@(circleComponent.Color.ToKnownColor())" stroke-width="1" fill="gray" />
-                    break;
-                case RectangleComponent rectangleComponent:
-                    <rect x="@rectangleComponent.Rectangle.TopLeft.X" y="@rectangleComponent.Rectangle.TopLeft.Y" width="@rectangleComponent.Rectangle.Size.X" height="@rectangleComponent.Rectangle.Size.Y" fill="white" stroke="@(rectangleComponent.Color.ToKnownColor())" stroke-width="@(1)" />
-                    break;
-            }
-        }
-        
-        @for (int i = Engine.Scene.Obstacles.Count() - 1; i >= 0; i--)
-        {
-            switch (Engine.Scene.Obstacles.ElementAt(i))
-            {
-                case CircleComponent circleComponent:
-                    <circle cx="@(circleComponent.Circle.Position.X)" cy="@(circleComponent.Circle.Position.Y)" r="@(circleComponent.Circle.Radius)" stroke="@(circleComponent.Color.ToKnownColor())" stroke-width="1" fill="gray" />
-                    break;
-                case RectangleComponent rectangleComponent:
-                    <rect x="@rectangleComponent.Rectangle.TopLeft.X" y="@rectangleComponent.Rectangle.TopLeft.Y" width="@rectangleComponent.Rectangle.Size.X" height="@rectangleComponent.Rectangle.Size.Y" fill="white" stroke="@(rectangleComponent.Color.ToKnownColor())" stroke-width="@(1)" />
-                    break;
-            }
-        }
-    </svg>
-
-</div>
-
+<SceneControllerView ViewModel="SceneController" />

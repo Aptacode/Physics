@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Metadata;
 using System.Timers;
+using Aptacode.Geometry.Blazor.Components.ViewModels;
 using Aptacode.Geometry.Collision;
-using Aptacode.Geometry.Primitives;
-using Aptacode.Geometry.Vertices;
-using Rectangle = Aptacode.Geometry.Primitives.Polygons.Rectangle;
 
 namespace Aptacode.Physics
 {
@@ -15,22 +14,24 @@ namespace Aptacode.Physics
     {
         public static readonly float Tolerance = 0.001f;
     }
-    public abstract class PhysicsComponent
+    public class PhysicsComponent
     {
-        public Primitive Primitive { get; set; }
+        public ComponentViewModel Component { get; set; }
         public Color Color { get; set; }
         public Vector2 Velocity { get; set; }
         public Vector2 Acceleration { get; set; }
         public float Mass { get; set; }
+        public bool HasPhysics { get; set; }
 
         public static readonly Vector2 Gravity = new Vector2(0, 0.9f);
 
-        protected PhysicsComponent(Primitive primitive)
+        public PhysicsComponent(ComponentViewModel component)
         {
-            Primitive = primitive;
+            Component = component;
             Color = Color.Gray;
-            Velocity = new Vector2(2,1);
+            Velocity = new Vector2(4f,1f);
             Mass = 1.0f;
+            HasPhysics = true;
         }
                
         public void Start()
@@ -39,10 +40,14 @@ namespace Aptacode.Physics
         }
 
         private readonly float _frictionCoefficient = 0.05f;
-        private readonly float _minVelocity = 0.000001f;
+        private readonly float _minVelocity = 0.001f;
         public void ApplyFriction()
         {
-
+            if (Math.Abs(Velocity.X) <= Constants.Tolerance && Math.Abs(Velocity.Y) <= Constants.Tolerance)
+            {
+                return;
+            }
+            
             var friction = Velocity * -1.0f;
             friction = Vector2.Normalize(friction) * _frictionCoefficient;
             ApplyForce(friction);
@@ -53,137 +58,75 @@ namespace Aptacode.Physics
             Acceleration += force / Mass;
         }
 
-        public void ApplyAcceleration()
+        public void ApplyAcceleration(TimeSpan delta)
         {
-            Velocity += Acceleration;
+            Velocity += Acceleration * (float)delta.TotalSeconds;
         }
 
-        public void ApplyVelocity()
+        public Vector2 ApplyVelocity(TimeSpan delta)
         {
-            if (Velocity.X <= _minVelocity)
+            if (Math.Abs(Velocity.X) <= _minVelocity)
             {
                 Velocity = new Vector2(0.0f, Velocity.Y);
             }
-            if (Velocity.Y <= _minVelocity)
+            if (Math.Abs(Velocity.Y) <= _minVelocity)
             {
                 Velocity = new Vector2(Velocity.X, 0.0f);
             }
-        }
 
-        public void Update()
-        {
-            Primitive = Primitive.Translate(Velocity);
-        }
-    }
-
-    public class CircleComponent : PhysicsComponent
-    {
-        public Circle Circle => (Circle) Primitive;
-        
-        public CircleComponent(Vector2 center, float radius) : base(new Geometry.Primitives.Circle(center, radius))
-        {
-            
-        }
-    }
-
-    public class RectangleComponent : PhysicsComponent
-    {
-        public Rectangle Rectangle => (Rectangle)Primitive;
-
-        public RectangleComponent(Vector2 position, Vector2 size) : base(Rectangle.Create(position, size))
-        {
-
-        }
-    }
-
-    public class PhysicsScene
-    {
-        public Vector2 Size { get; set; }
-        public List<PhysicsComponent> Components { get; set; }
-        public List<PhysicsComponent> Obstacles { get; set; }
-        public readonly PolyLine TopWall, RightWall, BottomWall, LeftWall;
-
-
-        public PhysicsScene()
-        {
-            Size = new Vector2(100, 100);
-            TopWall = new PolyLine(VertexArray.Create(new Vector2(0, 0), new Vector2(Size.X, 0)));
-            RightWall = new PolyLine(VertexArray.Create(new Vector2(Size.X, 0), new Vector2(Size.X, Size.Y)));
-            BottomWall = new PolyLine(VertexArray.Create(new Vector2(Size.X, Size.Y), new Vector2(0, Size.Y)));
-            LeftWall = new PolyLine(VertexArray.Create(new Vector2(0, Size.Y), new Vector2(0, 0)));
-            
-            Components = new List<PhysicsComponent>();
-            Obstacles = new List<PhysicsComponent>();
-            Components.Add(new CircleComponent(new Vector2(60,20), 10));
-         //   Obstacles.Add(new RectangleComponent(new Vector2(20,20), new Vector2(20, 20)));
+            return Velocity * (float)delta.TotalSeconds;
         }
     }
 
     public class PhysicsEngine
     {
-        public PhysicsScene Scene { get; set; }
-
-        public PhysicsEngine()
+        public List<PhysicsComponent> Components { get; set; }
+        public CollisionDetector CollisionDetector { get; set; }
+        
+        public PhysicsEngine(IEnumerable<PhysicsComponent> components, CollisionDetector collisionDetector)
         {
-            Scene = new PhysicsScene();
+            CollisionDetector = collisionDetector;
+            Components = components.ToList();
         }
 
         public void Start()
         {
-            _timer = new Timer(10);
+            _timer = new Timer(1.0f/60.0f);
             _timer.Elapsed += Tick;
             _timer.Start();
+            _lastTick = DateTime.Now;
         }
 
         private Timer _timer;
         private DateTime _lastTick;
-        private readonly CollisionDetector collisionDetector = new HybridCollisionDetector();
-
         private void Tick(object sender, ElapsedEventArgs e)
         {
             var currentTime = DateTime.Now;
             var delta = currentTime - _lastTick;
+            ApplyPhysics(delta);
             _lastTick = currentTime;
-
-            foreach (var component in Scene.Components)
-            {
-                component.Start();
-                
-                component.ApplyFriction();
-                if (!Scene.BottomWall.CollidesWith(component.Primitive, collisionDetector))
-                {
-                    component.ApplyForce(new Vector2(0.0f, 0.9f));
-                }
-                
-                component.ApplyAcceleration();
-                if (Scene.Obstacles.Any(o => component.Primitive.CollidesWith(o.Primitive,
-                    collisionDetector)))
-                {
-                    component.Velocity *= -1.0f;
-                }
-
-                if (Scene.TopWall.CollidesWith(component.Primitive, collisionDetector) || Scene.BottomWall.CollidesWith(component.Primitive, collisionDetector))
-                {
-                    component.Velocity *= new Vector2(1.0f, -1.0f);
-                }
-
-                if (Scene.RightWall.CollidesWith(component.Primitive, collisionDetector) || Scene.LeftWall.CollidesWith(component.Primitive, collisionDetector))
-                {
-                    component.Velocity *= new Vector2(-1.0f, 1.0f);
-                }
-                
-                component.ApplyVelocity();
-                component.Update();
-            }
-
-            Redraw();
         }
 
-        public void Redraw()
+        public void ApplyPhysics(TimeSpan delta)
         {
-            OnRedraw?.Invoke(this, Scene);
-        }
+            foreach (var c in Components.Where(c => c.HasPhysics))
+            {
+                c.Start();
+                c.ApplyForce(new Vector2(0,9f));
+                c.ApplyFriction();
+                c.ApplyAcceleration(delta);
+                
+                var distance = c.ApplyVelocity(delta);
+                var newPrimitive = c.Component.Primitive.Translate(distance);
 
-        public event EventHandler<PhysicsScene> OnRedraw;
+                if (Components.Any(component => c != component && component.Component.Primitive.CollidesWith(newPrimitive, CollisionDetector)))
+                {
+                    c.Velocity *= -1;
+                }
+                
+                distance = c.ApplyVelocity(delta);
+                c.Component.Translate(distance);
+            }
+        }
     }
 }
