@@ -19,9 +19,9 @@ namespace Aptacode.Physics.Blazor.Pages
             var wall3 = componentBuilder.SetPhysics(false).SetPrimitive(Rectangle.Create(0, 49, 100, 1)).Build();
             var wall4 = componentBuilder.SetPhysics(false).SetPrimitive(Rectangle.Create(0, 0, 1, 50)).Build();
 
-            var primitive1 = componentBuilder.SetPhysics(true).SetVelocity(new Vector2(1,1)).SetPrimitive(Ellipse.Create(20, 20, 1.0f)).Build();
-            var primitive2 = componentBuilder.SetPhysics(true).SetVelocity(new Vector2(-10,1)).SetPrimitive(Ellipse.Create(30, 20, 4.0f)).Build();
-            var primitive3 = componentBuilder.SetPhysics(true).SetVelocity(new Vector2(5,1)).SetPrimitive(Ellipse.Create(35, 35, 10.0f)).Build();
+            var primitive1 = componentBuilder.SetMass(10).SetVelocity(new Vector2(1,1)).SetPrimitive(Ellipse.Create(20, 20, 1.0f)).Build();
+            var primitive2 = componentBuilder.SetMass(40).SetVelocity(new Vector2(-10,1)).SetPrimitive(Ellipse.Create(30, 20, 4.0f)).Build();
+            var primitive3 = componentBuilder.SetMass(1000).SetVelocity(new Vector2(5,1)).SetPrimitive(Ellipse.Create(35, 35, 10.0f)).Build();
 
             var physicsSceneBuilder = new PhysicsSceneBuilder();
             physicsSceneBuilder.SetWidth(100).SetHeight(50);

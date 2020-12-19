@@ -12,12 +12,19 @@ namespace Aptacode.Physics.Blazor.Pages
         private Vector2 _acceleration = Vector2.Zero;
         private float _mass = 1.0f;
         private bool _hasPhysics = true;
+        private bool _hasCollisions = true;
 
         public PhysicsComponentBuilder SetVelocity(Vector2 velocity)
         {
             _velocity = velocity;
             return this;
         }
+        public PhysicsComponentBuilder SetCollision(bool collision)
+        {
+            _hasCollisions = collision;
+            return this;
+        }
+        
         public PhysicsComponentBuilder SetAcceleration(Vector2 acceleration)
         {
             _acceleration = acceleration;
@@ -47,7 +54,8 @@ namespace Aptacode.Physics.Blazor.Pages
                 Mass = _mass,
                 Acceleration = _acceleration,
                 Velocity = _velocity,
-                HasPhysics = _hasPhysics
+                HasPhysics = _hasPhysics,
+                HasCollisions = _hasCollisions
             };
 
             Reset();
@@ -61,6 +69,7 @@ namespace Aptacode.Physics.Blazor.Pages
             _acceleration = Vector2.Zero;
             _velocity = Vector2.Zero;
             _hasPhysics = true;
+            _hasCollisions = true;
         }
     }
 }

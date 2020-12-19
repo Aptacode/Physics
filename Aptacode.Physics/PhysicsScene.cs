@@ -22,6 +22,12 @@ namespace Aptacode.Physics
         public Vector2 Acceleration { get; set; }
         public float Mass { get; set; }
         public bool HasPhysics { get; set; }
+        
+        public bool HasCollisions
+        {
+            get => Component.CollisionDetectionEnabled;
+            set => Component.CollisionDetectionEnabled = value;
+        }
 
         public static readonly Vector2 Gravity = new Vector2(0, 0.9f);
 
@@ -32,6 +38,7 @@ namespace Aptacode.Physics
             Velocity = new Vector2(4f,1f);
             Mass = 1.0f;
             HasPhysics = true;
+            HasCollisions = true;
         }
                
         public void Start()
@@ -91,7 +98,7 @@ namespace Aptacode.Physics
 
         public void Start()
         {
-            _timer = new Timer(1.0f/60.0f);
+            _timer = new Timer(1.0f/30.0f);
             _timer.Elapsed += Tick;
             _timer.Start();
             _lastTick = DateTime.Now;
@@ -109,23 +116,34 @@ namespace Aptacode.Physics
 
         public void ApplyPhysics(TimeSpan delta)
         {
-            foreach (var c in Components.Where(c => c.HasPhysics))
+            foreach (var C1 in Components.Where(c => c.HasPhysics))
             {
-                c.Start();
-                c.ApplyForce(new Vector2(0,9f));
-                c.ApplyFriction();
-                c.ApplyAcceleration(delta);
-                
-                var distance = c.ApplyVelocity(delta);
-                var newPrimitive = c.Component.Primitive.Translate(distance);
+                C1.Start();
+                //C1.ApplyForce(new Vector2(0,9f));
 
-                if (Components.Any(component => c != component && component.Component.Primitive.CollidesWith(newPrimitive, CollisionDetector)))
-                {
-                    c.Velocity *= -1;
-                }
                 
-                distance = c.ApplyVelocity(delta);
-                c.Component.Translate(distance);
+                foreach (var C2 in Components.Where(c => c.HasPhysics && C1 != c))
+                {
+                    var force = C2.Component.Primitive.BoundingCircle.Center - C1.Component.Primitive.BoundingCircle.Center;
+                    var d = force.Length();
+                    force = Vector2.Normalize(force);
+                    var strength = (0.4f * C1.Mass * C2.Mass) / (d * d);
+                    force *= (float)strength;
+                    C1.ApplyForce(force);
+                }
+
+                C1.ApplyFriction();
+                C1.ApplyAcceleration(delta);
+
+                var distance = C1.ApplyVelocity(delta);
+                var newPrimitive = C1.Component.Primitive.Translate(distance);
+                if (Components.Any(c => C1 != c && c.HasCollisions && c.Component.Primitive.CollidesWith(newPrimitive, CollisionDetector)))
+                {
+                    C1.Velocity *= -1;
+                }
+
+                distance = C1.ApplyVelocity(delta);
+                C1.Component.Translate(distance);
             }
         }
     }
