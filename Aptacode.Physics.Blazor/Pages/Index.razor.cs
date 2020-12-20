@@ -24,7 +24,7 @@ namespace Aptacode.Physics.Blazor.Pages
             physicsSceneBuilder.SetWidth(100).SetHeight(50);
             physicsSceneBuilder.AddComponent(wall1).AddComponent(wall2).AddComponent(wall3).AddComponent(wall4);
 
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 30; i++)
             {
                 var radius = _rand.Next(5, 20);
                 var primitiveN = componentBuilder.SetMass(radius * 150)

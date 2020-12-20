@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aptacode.Geometry.Blazor.Components.ViewModels;
 using Aptacode.Geometry.Blazor.Extensions;
-using Aptacode.Geometry.Blazor.Utilities;
 
 namespace Aptacode.Physics
 {
@@ -16,7 +15,6 @@ namespace Aptacode.Physics
         public PhysicsSceneController(PhysicsEngine physicsEngine, Vector2 size) : base(new SceneViewModel(
             size,
             physicsEngine.Components.Select(c => c.Component)
-            
         ))
         {
             PhysicsEngine = physicsEngine;
@@ -27,7 +25,12 @@ namespace Aptacode.Physics
 
             Start();
         }
+
         public bool Running { get; set; }
+
+        public ComponentViewModel SelectedComponent { get; set; }
+        public PhysicsEngine PhysicsEngine { get; set; }
+
         public void Start()
         {
             var lastTick = DateTime.Now;
@@ -41,7 +44,7 @@ namespace Aptacode.Physics
                     var currentTime = DateTime.Now;
                     var delta = currentTime - lastTick;
                     lastTick = currentTime;
-                    
+
                     PhysicsEngine.ApplyPhysics(delta);
 
                     await Scene.RedrawAsync();
@@ -50,9 +53,6 @@ namespace Aptacode.Physics
                 }
             });
         }
-
-        public ComponentViewModel SelectedComponent { get; set; }
-        public PhysicsEngine PhysicsEngine { get; set; }
 
         private void UserInteractionControllerOnOnMouseMoved(object? sender, Vector2 e)
         {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Threading.Tasks;
 using Aptacode.Geometry.Collision;
 
 namespace Aptacode.Physics
@@ -15,20 +14,26 @@ namespace Aptacode.Physics
         {
             CollisionDetector = collisionDetector;
             Components = components.ToList();
+            physicsComponents = components.Where(c => c.HasPhysics).ToArray();
         }
 
         #endregion
 
         public void ApplyPhysics(TimeSpan delta)
         {
-            foreach (var C1 in Components.Where(c => c.HasPhysics))
+            foreach (var C1 in physicsComponents)
             {
                 C1.Start();
                 //C1.ApplyForce(new Vector2(0,9f));
 
 
-                foreach (var C2 in Components.Where(c => c.HasPhysics && C1 != c))
+                foreach (var C2 in physicsComponents)
                 {
+                    if (C1 == C2)
+                    {
+                        continue;
+                    }
+
                     var force = C2.Component.Primitive.BoundingCircle.Center -
                                 C1.Component.Primitive.BoundingCircle.Center;
                     var d = force.LengthSquared();
@@ -56,6 +61,7 @@ namespace Aptacode.Physics
 
         #region Properties
 
+        private PhysicsComponent[] physicsComponents { get; }
         public List<PhysicsComponent> Components { get; set; }
         public CollisionDetector CollisionDetector { get; set; }
 
