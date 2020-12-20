@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
+using System.Threading.Tasks;
 using Aptacode.Geometry.Blazor.Components.ViewModels;
 using Aptacode.Geometry.Blazor.Extensions;
 using Aptacode.Geometry.Blazor.Utilities;
@@ -11,11 +13,11 @@ namespace Aptacode.Physics
 {
     public class PhysicsSceneController : SceneControllerViewModel
     {
-        public PhysicsSceneController(PhysicsEngine physicsEngine, Vector2 size) : base(new SceneViewModel
-        {
-            Components = physicsEngine.Components.Select(c => c.Component).ToList(),
-            Size = size.ToScale()
-        })
+        public PhysicsSceneController(PhysicsEngine physicsEngine, Vector2 size) : base(new SceneViewModel(
+            size,
+            physicsEngine.Components.Select(c => c.Component)
+            
+        ))
         {
             PhysicsEngine = physicsEngine;
 
@@ -23,7 +25,30 @@ namespace Aptacode.Physics
             UserInteractionController.OnMouseUp += UserInteractionControllerOnOnMouseUp;
             UserInteractionController.OnMouseMoved += UserInteractionControllerOnOnMouseMoved;
 
-            PhysicsEngine.Start();
+            Start();
+        }
+        public bool Running { get; set; }
+        public void Start()
+        {
+            var lastTick = DateTime.Now;
+            new TaskFactory().StartNew(async () =>
+            {
+                Running = true;
+                while (Running)
+                {
+                    await Task.Delay(1);
+
+                    var currentTime = DateTime.Now;
+                    var delta = currentTime - lastTick;
+                    lastTick = currentTime;
+                    
+                    PhysicsEngine.ApplyPhysics(delta);
+
+                    await Scene.RedrawAsync();
+                    var frameRate = 1.0f / delta.TotalSeconds;
+                    Console.WriteLine($"{frameRate}fps");
+                }
+            });
         }
 
         public ComponentViewModel SelectedComponent { get; set; }

@@ -19,28 +19,6 @@ namespace Aptacode.Physics
 
         #endregion
 
-
-        public void Start()
-        {
-            var lastTick = DateTime.Now;
-            new TaskFactory().StartNew(async () =>
-            {
-                var delta = TimeSpan.Zero;
-                Running = true;
-                while (Running)
-                {
-                    await Task.Delay(15);
-                    var currentTime = DateTime.Now;
-                    delta = currentTime - lastTick;
-                    ApplyPhysics(delta);
-                    lastTick = currentTime;
-                    var frameRate = 1.0f / delta.TotalSeconds;
-                    Console.WriteLine($"{frameRate}fps");
-                }
-            });
-        }
-
-
         public void ApplyPhysics(TimeSpan delta)
         {
             foreach (var C1 in Components.Where(c => c.HasPhysics))
@@ -60,7 +38,7 @@ namespace Aptacode.Physics
                     C1.ApplyForce(force);
                 }
 
-                //  C1.ApplyFriction();
+                C1.ApplyFriction();
                 C1.ApplyAcceleration(delta);
 
                 var distance = C1.ApplyVelocity(delta);
@@ -80,7 +58,6 @@ namespace Aptacode.Physics
 
         public List<PhysicsComponent> Components { get; set; }
         public CollisionDetector CollisionDetector { get; set; }
-        public bool Running { get; set; }
 
         #endregion
     }
