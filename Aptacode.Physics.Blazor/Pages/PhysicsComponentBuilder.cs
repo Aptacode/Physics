@@ -1,17 +1,15 @@
 ﻿using System.Numerics;
-using Aptacode.Geometry.Blazor.Utilities;
-using Aptacode.Geometry.Primitives;
+using Aptacode.Geometry.Blazor.Components.ViewModels;
 
 namespace Aptacode.Physics.Blazor.Pages
 {
     public class PhysicsComponentBuilder
     {
-        private readonly ViewModelFactory _viewModelFactory = new();
         private Vector2 _acceleration = Vector2.Zero;
+        private ComponentViewModel _component;
         private bool _hasCollisions = true;
         private bool _hasPhysics = true;
         private float _mass = 1.0f;
-        private Primitive _primitive = new Point(Vector2.Zero);
         private Vector2 _velocity = Vector2.Zero;
 
         public PhysicsComponentBuilder SetVelocity(Vector2 velocity)
@@ -44,15 +42,15 @@ namespace Aptacode.Physics.Blazor.Pages
             return this;
         }
 
-        public PhysicsComponentBuilder SetPrimitive(Primitive primitive)
+        public PhysicsComponentBuilder SetComponent(ComponentViewModel component)
         {
-            _primitive = primitive;
+            _component = component;
             return this;
         }
 
         public PhysicsComponent Build()
         {
-            var component = new PhysicsComponent(_viewModelFactory.ToViewModel(_primitive))
+            var component = new PhysicsComponent(_component)
             {
                 Mass = _mass,
                 Acceleration = _acceleration,
@@ -67,7 +65,6 @@ namespace Aptacode.Physics.Blazor.Pages
 
         public void Reset()
         {
-            _primitive = new Point(Vector2.Zero);
             _mass = 1.0f;
             _acceleration = Vector2.Zero;
             _velocity = Vector2.Zero;

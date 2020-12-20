@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Aptacode.Geometry.Blazor.Utilities;
 using Aptacode.Geometry.Collision;
 
 namespace Aptacode.Physics.Blazor.Pages
@@ -8,7 +7,6 @@ namespace Aptacode.Physics.Blazor.Pages
     public class PhysicsSceneBuilder
     {
         private readonly List<PhysicsComponent> _components = new();
-        private readonly ViewModelFactory _viewModelFactory = new();
         private CollisionDetector _collisionDetector = new HybridCollisionDetector();
         private float _height;
         private float _width;

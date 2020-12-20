@@ -9,7 +9,7 @@ namespace Aptacode.Physics
     {
         public static readonly Vector2 Gravity = new(0, 0.9f);
 
-        private readonly float _frictionCoefficient = 0.5f;
+        private readonly float _frictionCoefficient = 1.0f;
         private readonly float _minVelocity = 0.001f;
 
         public PhysicsComponent(ComponentViewModel component)
@@ -47,7 +47,7 @@ namespace Aptacode.Physics
                 return;
             }
 
-            var friction = Velocity * -1.0f;
+            var friction = Velocity * -0.8f;
             friction = Vector2.Normalize(friction) * _frictionCoefficient;
             ApplyForce(friction);
         }

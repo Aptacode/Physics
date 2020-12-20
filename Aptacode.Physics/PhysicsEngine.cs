@@ -51,7 +51,7 @@ namespace Aptacode.Physics
                 if (Components.Any(c =>
                     C1 != c && c.HasCollisions && c.Component.Primitive.CollidesWith(newPrimitive, CollisionDetector)))
                 {
-                    C1.Velocity *= -1;
+                    C1.Velocity *= -0.9f;
                 }
 
                 distance = C1.ApplyVelocity(delta);
