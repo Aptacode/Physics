@@ -19,30 +19,30 @@ namespace Aptacode.Physics.Blazor.Pages
             var componentBuilder = new ComponentBuilder();
 
             var wall1 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(0, -9, 100, 10)).Build()).Build();
+                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(0, -9, 200, 10)).Build()).Build();
             var wall2 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(99, 0, 10, 50)).Build()).Build();
+                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(199, 0, 10, 100)).Build()).Build();
             var wall3 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(0, 49, 100, 10)).Build()).Build();
+                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(0, 100, 200, 10)).Build()).Build();
             var wall4 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(-9, 0, 10, 50)).Build()).Build();
+                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(-9, 0, 10, 100)).Build()).Build();
 
             var physicsSceneBuilder = new PhysicsSceneBuilder();
-            physicsSceneBuilder.SetWidth(100).SetHeight(50);
+            physicsSceneBuilder.SetWidth(200).SetHeight(100);
             physicsSceneBuilder.AddComponent(wall1).AddComponent(wall2).AddComponent(wall3).AddComponent(wall4);
 
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 40; i++)
             {
-                var radius = _rand.Next(5, 20);
+                var radius = _rand.Next(1, 5);
                 var primitiveN = physicsComponentBuilder.SetMass(radius * 100)
                     .SetVelocity(new Vector2(_rand.Next(0, 5), _rand.Next(0, 5)))
                     .SetComponent(componentBuilder
-                        .SetPrimitive(Ellipse.Create(_rand.Next(10, 90), _rand.Next(10, 40), radius / 10.0f))
+                        .SetPrimitive(Ellipse.Create(_rand.Next(50, 150), _rand.Next(25, 75), radius, radius, 0.0f))
                         .SetFillColor(Color.Gray).Build()).Build();
                 physicsSceneBuilder.AddComponent(primitiveN);
             }
 
-            SceneController = new PhysicsSceneController(physicsSceneBuilder.Build(), new Vector2(100, 50));
+            SceneController = new PhysicsSceneController(physicsSceneBuilder.Build(), new Vector2(200, 100));
 
             await base.OnInitializedAsync();
         }

@@ -40,7 +40,8 @@ namespace Aptacode.Physics.Blazor.Pages
         {
             var engine = new PhysicsEngine(_components, _collisionDetector)
             {
-                Components = _components.ToList()
+                Components = _components.ToList(),
+                
             };
 
             Reset();

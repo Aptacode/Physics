@@ -22,36 +22,21 @@ namespace Aptacode.Physics
             UserInteractionController.OnMouseDown += UserInteractionControllerOnOnMouseDown;
             UserInteractionController.OnMouseUp += UserInteractionControllerOnOnMouseUp;
             UserInteractionController.OnMouseMoved += UserInteractionControllerOnOnMouseMoved;
-
-            Start();
         }
 
         public bool Running { get; set; }
 
         public ComponentViewModel SelectedComponent { get; set; }
         public PhysicsEngine PhysicsEngine { get; set; }
+        DateTime lastTick = DateTime.Now;
 
-        public void Start()
+        public override async Task Tick()
         {
-            var lastTick = DateTime.Now;
-            new TaskFactory().StartNew(async () =>
-            {
-                Running = true;
-                while (Running)
-                {
-                    await Task.Delay(1);
-
-                    var currentTime = DateTime.Now;
-                    var delta = currentTime - lastTick;
-                    lastTick = currentTime;
-
-                    PhysicsEngine.ApplyPhysics(delta);
-
-                    await Scene.RedrawAsync();
-                    var frameRate = 1.0f / delta.TotalSeconds;
-                    Console.WriteLine($"{frameRate}fps");
-                }
-            });
+            var currentTime = DateTime.Now;
+            var delta = currentTime - lastTick;
+            lastTick = currentTime;
+            PhysicsEngine.ApplyPhysics(delta);
+            await base.Tick();
         }
 
         private void UserInteractionControllerOnOnMouseMoved(object? sender, Vector2 e)
