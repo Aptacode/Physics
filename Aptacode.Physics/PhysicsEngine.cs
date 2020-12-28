@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Aptacode.Geometry.Collision;
+using Aptacode.Geometry.Collision.Rectangles;
 
 namespace Aptacode.Physics
 {
@@ -34,8 +35,8 @@ namespace Aptacode.Physics
                         continue;
                     }
 
-                    var force = C2.Component.Primitive.BoundingCircle.Center -
-                                C1.Component.Primitive.BoundingCircle.Center;
+                    var force = C2.Component.BoundingRectangle.Center -
+                                C1.Component.BoundingRectangle.Center;
                     var d = force.LengthSquared();
                     force = Vector2.Normalize(force);
                     var strength = 0.5f * C1.Mass * C2.Mass / d;
@@ -47,9 +48,9 @@ namespace Aptacode.Physics
                 C1.ApplyAcceleration(delta);
 
                 var distance = C1.ApplyVelocity(delta);
-                var newPrimitive = C1.Component.Primitive.Translate(distance);
+                var newPrimitive = C1.Component.BoundingRectangle.Translate(distance);
                 if (Components.Any(c =>
-                    C1 != c && c.HasCollisions && c.Component.Primitive.CollidesWith(newPrimitive, CollisionDetector)))
+                    C1 != c && c.HasCollisions && c.Component.BoundingRectangle.CollidesWith(newPrimitive)))
                 {
                     C1.Velocity *= -0.9f;
                 }

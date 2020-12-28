@@ -21,13 +21,13 @@ namespace Aptacode.Physics.Blazor.Pages
             var height = 480;
 
             var wall1 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(0, 0, width, 10)).Build()).Build();
+                .SetComponent(componentBuilder.AddPrimitive(Rectangle.Create(0, 0, width, 10)).Build()).Build();
             var wall2 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(width - 10, 0, 10, height)).Build()).Build();
+                .SetComponent(componentBuilder.AddPrimitive(Rectangle.Create(width - 10, 0, 10, height)).Build()).Build();
             var wall3 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(0, height - 10, width, 10)).Build()).Build();
+                .SetComponent(componentBuilder.AddPrimitive(Rectangle.Create(0, height - 10, width, 10)).Build()).Build();
             var wall4 = physicsComponentBuilder.SetPhysics(false)
-                .SetComponent(componentBuilder.SetPrimitive(Rectangle.Create(10, 0, 10, height)).Build()).Build();
+                .SetComponent(componentBuilder.AddPrimitive(Rectangle.Create(10, 0, 10, height)).Build()).Build();
 
             var physicsSceneBuilder = new PhysicsSceneBuilder();
             physicsSceneBuilder.SetWidth(width).SetHeight(height);
@@ -35,13 +35,13 @@ namespace Aptacode.Physics.Blazor.Pages
 
             var maxRadius = 50;
             var minRadius = 10;
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 40; i++)
             {
                 var radius = _rand.Next(minRadius, maxRadius);
                 var primitiveN = physicsComponentBuilder.SetMass(radius * 500)
                     .SetVelocity(new Vector2(_rand.Next(0, 40), _rand.Next(0, 40)))
                     .SetComponent(componentBuilder
-                        .SetPrimitive(
+                        .AddPrimitive(
                             Ellipse.Create(
                                 _rand.Next(maxRadius, width - maxRadius), 
                                 _rand.Next(maxRadius, height - maxRadius), 
