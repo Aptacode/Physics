@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Aptacode.Geometry.Blazor.Components.ViewModels;
+using Aptacode.Geometry.Blazor.Components.ViewModels.Components;
 
 namespace Aptacode.Physics.Blazor.Pages
 {

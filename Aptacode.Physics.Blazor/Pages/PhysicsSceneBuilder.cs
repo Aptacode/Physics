@@ -38,9 +38,8 @@ namespace Aptacode.Physics.Blazor.Pages
 
         public PhysicsEngine Build()
         {
-            var engine = new PhysicsEngine(_components, _collisionDetector)
+            var engine = new PhysicsEngine(_collisionDetector)
             {
-                Components = _components.ToList(),
                 
             };
 

@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Aptacode.Geometry.Blazor.Components.ViewModels;
+using Aptacode.Geometry.Blazor.Components.ViewModels.Components;
 using Aptacode.Geometry.Blazor.Extensions;
 
 namespace Aptacode.Physics
@@ -13,8 +14,7 @@ namespace Aptacode.Physics
     public class PhysicsSceneController : SceneControllerViewModel
     {
         public PhysicsSceneController(PhysicsEngine physicsEngine, Vector2 size) : base(new SceneViewModel(
-            size,
-            physicsEngine.Components.Select(c => c.Component)
+            size
         ))
         {
             PhysicsEngine = physicsEngine;
@@ -36,6 +36,7 @@ namespace Aptacode.Physics
             var delta = currentTime - lastTick;
             lastTick = currentTime;
             PhysicsEngine.ApplyPhysics(delta);
+
             await base.Tick();
         }
 

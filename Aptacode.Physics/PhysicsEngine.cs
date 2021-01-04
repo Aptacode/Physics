@@ -11,24 +11,27 @@ namespace Aptacode.Physics
     {
         #region Constructor
 
-        public PhysicsEngine(IEnumerable<PhysicsComponent> components, CollisionDetector collisionDetector)
+        public PhysicsEngine(CollisionDetector collisionDetector)
         {
             CollisionDetector = collisionDetector;
-            Components = components.ToList();
-            physicsComponents = components.Where(c => c.HasPhysics).ToArray();
+            Components = new List<PhysicsComponent>();
         }
 
         #endregion
 
         public void ApplyPhysics(TimeSpan delta)
         {
-            foreach (var C1 in physicsComponents)
+            foreach (var C1 in Components)
             {
+                if (!C1.HasPhysics)
+                {
+                    continue;
+                }
                 C1.Start();
                 //C1.ApplyForce(new Vector2(0,9f));
 
 
-                foreach (var C2 in physicsComponents)
+                foreach (var C2 in Components)
                 {
                     if (C1 == C2)
                     {
@@ -62,7 +65,6 @@ namespace Aptacode.Physics
 
         #region Properties
 
-        private PhysicsComponent[] physicsComponents { get; }
         public List<PhysicsComponent> Components { get; set; }
         public CollisionDetector CollisionDetector { get; set; }
 
